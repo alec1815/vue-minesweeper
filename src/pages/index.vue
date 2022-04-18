@@ -133,6 +133,7 @@ function onRightClick(block:BlockState){
   if(block.revealed)
     return
   block.flagged = !block.flagged
+  checkGameState()
 }
 
 function onClick(block:BlockState) {
@@ -147,7 +148,7 @@ function onClick(block:BlockState) {
     alert('BOOOM!')
   // console.log("A")
   expendZero(block)
-  // checkGameState()
+  checkGameState()
 }
 updateNumbers()
 </script>
