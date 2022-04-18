@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import {BlockState} from '~/types'
+import type {BlockState} from '~/types'
+import {toggleDev, isDev} from '~/composables'
+
 const WIDTH = 10
 const HEIGHT = 10
 const state = reactive(
@@ -38,17 +40,7 @@ const directions = [
   [0,1],
 ]
 
-const numberColors = [
-  'text-transparent',
-  'text-blue-500',
-  'text-green-500',
-  'text-yellow-500',
-  'text-orange-500',
-  'text-red-500',
-  'text-purple-500',
-  'text-pink-500',
-  'text-teal-500'
-]
+
 
 function updateNumbers(){
   state.forEach((row,y)=>{
@@ -93,16 +85,10 @@ function getSiblings(block:BlockState){
     .filter(Boolean) as BlockState[]
 }
 
-function getBlockClass(block:BlockState){
-  if(block.flagged)
-    return 'bg-gray-500/10'
-  if(!block.revealed)
-    return 'bg-gray-500/10 hover:bg-gray-500/20'
-  return block.mine ? 'bg-red-500/30 text-red-500': numberColors[block.adjacentMines]
-}
+
 
 let mineGenerated = false
-const dev = true
+
 
 watchEffect(checkGameState)
 
@@ -147,32 +133,20 @@ updateNumbers()
 <template>
   <div>
     Minesweeper
+    <button @click="toggleDev()">{{isDev}}</button>
     <div p-5>
       <div v-for="row,y in state"
        :key="y"
        flex="~"
        items-center justify-center>
 
-        <button
-          v-for="block,x in row"
+        <MineBlock
+         v-for="block,x in row"
           :key="x"
-          flex="~"
-          items-center justify-center
-          w-10 h-10 m=".5"
-          border="1 gray-300/10" 
-          :class="getBlockClass(block)"
+          :block="block"
           @click="onClick(block)"
           @contextmenu.prevent="onRightClick(block)"
-        >
-          <template v-if="block.flagged">
-            <div i-mdi-flag text-red></div>
-          </template>
-         <template v-else-if="block.revealed || dev">
-            <div v-if="block.mine" i-mdi-mine ></div>
-            <div v-else>{{ block.adjacentMines}}</div>
-         </template>
-          <!-- {{ item.mine ? 'x' : }} -->
-        </button>
+          ></MineBlock>
       </div>
     </div>
   </div>
