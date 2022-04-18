@@ -23,12 +23,17 @@ const state = reactive(
   )
 )
 
-function generateMines(){
+function generateMines(initial:BlockState){
   for(const row of state){
     for(const block of row){
-      block.mine = Math.random() < 0.3
+      if(Math.abs(initial.x - block.x) <= 1)
+        continue
+      if(Math.abs(initial.y - block.y) <= 1)
+        continue
+      block.mine = Math.random() < 0.2
     }
   }
+  updateNumbers()
 }
 
 const directions = [
@@ -58,16 +63,42 @@ function updateNumbers(){
     row.forEach((block,x)=>{
       if(block.mine)
         return
-      directions.forEach(([dx,dy])=>{
-        const x2 = x + dx
-        const y2 = y + dy
-        if(x2<0||x2>=WIDTH || y2<0||y2>=HEIGHT)
-          return
-        if(state[y2][x2].mine)
+      getSiblings(block)
+        .forEach(b=>{
+          if(b.mine)
           block.adjacentMines++
-      })
+        })
     })
   })
+}
+
+function expendZero(block:BlockState){
+  console.log(block);
+  if(block.adjacentMines)
+    return
+  
+  
+  getSiblings(block).forEach(b=>{
+
+    if(!b.revealed){
+      b.revealed = true
+      expendZero(b)
+    }
+    
+  })
+}
+
+function getSiblings(block:BlockState){
+  return directions.map(([dx,dy])=>{
+        const x2 = block.x + dx
+        const y2 = block.y + dy
+        if(x2<0||x2>=WIDTH || y2<0||y2>=HEIGHT)
+          return undefined
+        return state[y2][x2]
+        // if(state[y2][x2].mine)
+        //   block.adjacentMines++
+      })
+    .filter(Boolean) as BlockState
 }
 
 function getBlockClass(block:BlockState){
@@ -77,17 +108,22 @@ function getBlockClass(block:BlockState){
 }
 
 let mineGenerated = false
-const dev = false
+const dev = true
 
 
 function onClick(block:BlockState) {
   if(!mineGenerated){
-    block.revealed = true
-    generateMines()
+    generateMines(block)
+    mineGenerated = true
   }
+  
+  block.revealed = true
   
   if(block.mine)
     alert('BOOOM!')
+  console.log("A")
+  expendZero(block)
+  
 }
 
 updateNumbers()
