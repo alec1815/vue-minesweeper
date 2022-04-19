@@ -19,11 +19,11 @@ console.log("state",state)
 <template>
   <div>
     Minesweeper
-    <div p-5>
+    <div p-5 w-full overflow-auto>
       <div v-for="row,y in state"
        :key="y"
        flex="~"
-       items-center justify-center>
+       items-center justify-center w-max ma>
 
         <MineBlock
          v-for="block,x in row"
