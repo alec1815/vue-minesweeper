@@ -36,7 +36,7 @@ function getBlockClass(block:BlockState){
           </template>
          <template v-else-if="block.revealed || dev">
             <div v-if="block.mine" i-mdi-mine ></div>
-            <div v-else>{{ block.adjacentMines}}</div>
+            <div v-else font-600>{{ block.adjacentMines}}</div>
          </template>
           <!-- {{ item.mine ? 'x' : }} -->
         </button>

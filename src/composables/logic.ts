@@ -1,5 +1,13 @@
 /*
  * @Author: your name
+ * @Date: 2022-04-19 17:05:14
+ * @LastEditTime: 2022-04-19 17:09:26
+ * @LastEditors: Please set LastEditors
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: \vue-minesweeper\src\composables\logic copy.ts
+ */
+/*
+ * @Author: your name
  * @Date: 2022-04-19 15:33:23
  * @LastEditTime: 2022-04-19 15:54:20
  * @LastEditors: Please set LastEditors
@@ -111,12 +119,12 @@ export class GamePlay{
     }
 
     onClick(block:BlockState) {
-        // console.log("mineGenerated",this.mineGenerated)
+        // console.log("mineGenerated",this.state.value.mineGenerated)
         if(this.state.value.gameState !== 'play')
             return
-        if(!this.mineGenerated){
+        if(!this.state.value.mineGenerated){
             this.generateMines(this.board,block)
-            this.mineGenerated = true
+            this.state.value.mineGenerated = true
         }
 
         // console.log("generateMines",this.board.value)
@@ -157,19 +165,20 @@ export class GamePlay{
     }
 
     checkGameState(){
-        if(!this.mineGenerated)
+        if (!this.state.value.mineGenerated)
             return
         const blocks = this.board.flat()
-        if(blocks.every(block=>block.revealed || block.flagged)){
-            if(blocks.some(block=>block.flagged && !block.mine)){
-                alert('You cheat!')
-                this.state.value.gameState = 'lost'
-            }
-            else{
-                alert('You win!')
-                this.state.value.gameState = 'won'
-            }
 
+        if (blocks.every(block => block.revealed || block.flagged)) {
+            if (blocks.some(block => block.flagged && !block.mine)) {
+                this.state.value.gameState = 'lost'
+                this.showAllMines()
+                alert("lost")
+            }
+            else {
+                this.state.value.gameState = 'won'
+                alert("won")
+            }
         }
     }
 }
