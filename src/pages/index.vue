@@ -2,12 +2,16 @@
 import {toggleDev, isDev} from '~/composables'
 import { GamePlay } from '~/composables/logic';
 
-const play = new GamePlay(5,5)
+const play = new GamePlay(10,10,10)
 useStorage("vuesweeper-state",play.state)
 const state = computed(()=>play.board)
 
 watchEffect(()=>{
   play.checkGameState()
+})
+console.log("blocks",play.blocks)
+const mineCount = computed(()=>{
+  return play.blocks.reduce((a,b)=>a+(b.mine?1:0),0)
 })
 console.log("state",state)
 </script>
@@ -30,6 +34,7 @@ console.log("state",state)
           ></MineBlock>
       </div>
     </div>
+    <div>{{mineCount}}</div>
     <div flex="~ gap-1" justify-center >
       <button btn @click="toggleDev()">{{isDev ? 'DEV' : 'NORMAL'}}</button>
       <button btn @click="play.reset()">RESET</button>
