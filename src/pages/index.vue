@@ -3,7 +3,9 @@ import {toggleDev, isDev} from '~/composables'
 import { GamePlay } from '~/composables/logic';
 
 const play = new GamePlay(10,10)
-const state = play.state
+useStorage("vuesweeper-state",play.state)
+const state = computed(()=>play.board)
+console.log("state",state)
 </script>
 
 <template>

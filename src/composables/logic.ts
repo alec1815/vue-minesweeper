@@ -1,3 +1,12 @@
+/*
+ * @Author: your name
+ * @Date: 2022-04-19 15:33:23
+ * @LastEditTime: 2022-04-19 15:54:20
+ * @LastEditors: Please set LastEditors
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: \vue-minesweeper\src\composables\logic copy.ts
+ */
+import { Ref } from "vue"
 import { BlockState } from "~/types"
 
 const directions = [
@@ -8,30 +17,46 @@ const directions = [
     [-1,0],
     [-1,-1],
     [0,1],
-  ]
+]
+
+interface GameState{
+    board: BlockState[][]
+    mineGenerated:boolean
+    gameState:'play' | 'won' | 'lost'
+}
 
 export class GamePlay{
-    state = ref<BlockState[][]>([])
+    state = ref() as Ref<GameState>
     mineGenerated = false
+    gamesState = ref<'play' | 'won' | 'lost'>('play')
 
     constructor(
         public width:number,
         public height:number) {
         this.reset()
     }
+    get board(){
+        return this.state.value.board
+    }
 
     reset(){
-        this.mineGenerated = false
-        this.state.value = Array.from({ length:this.height }, (_,y)=>
-        Array.from({length:this.width},
-            (_,x):BlockState=> ({
-            x,
-            y,
-            adjacentMines:0,
-            revealed:false
-            })
+        console.log("reset")
+        const board = Array.from({ length:this.height }, (_,y)=>
+            Array.from({length:this.width},
+                (_,x):BlockState=> ({
+                    x,
+                    y,
+                    adjacentMines:0,
+                    revealed:false
+                })
+            )
         )
-        )
+        console.log("board",board)
+        this.state.value = {
+            mineGenerated :false,
+            gameState:'play',
+            board : board
+        }
     }
 
     generateMines(state: BlockState[][],initial:BlockState){
@@ -44,11 +69,12 @@ export class GamePlay{
             block.mine = Math.random() < 0.3
             }
         }
+        console.log("generateMines" ,state)
         this.updateNumbers()
     }
 
     updateNumbers(){
-        this.state.value.forEach((row)=>{
+        this.board.forEach((row)=>{
             row.forEach((block)=>{
             if(block.mine)
                 return
@@ -76,28 +102,36 @@ export class GamePlay{
     }
 
     onRightClick(block:BlockState){
+        if(this.state.value.gameState !== 'play')
+            return
         if(block.revealed)
-        return
+            return
         block.flagged = !block.flagged
         // this.checkGameState()
     }
 
     onClick(block:BlockState) {
         // console.log("mineGenerated",this.mineGenerated)
+        if(this.state.value.gameState !== 'play')
+            return
         if(!this.mineGenerated){
-            this.generateMines(this.state.value,block)
+            this.generateMines(this.board,block)
             this.mineGenerated = true
         }
 
-        // console.log("generateMines",this.state.value)
+        // console.log("generateMines",this.board.value)
         
         block.revealed = true
         
-        if(block.mine)
-        alert('BOOOM!')
+        if(block.mine){
+            this.state.value.gameState = 'lost'
+            this.showAllMines()
+            alert('BOOOM!')
+            return
+        }
         // console.log("A")
         this.expendZero(block)
-        this.checkGameState()
+        // this.checkGameState()
     }
 
     getSiblings(block:BlockState){
@@ -106,22 +140,36 @@ export class GamePlay{
                 const y2 = block.y + dy
                 if(x2<0||x2>=this.width || y2<0||y2>=this.height)
                 return undefined
-                return this.state.value[y2][x2]
+                return this.board[y2][x2]
                 // if(state[y2][x2].mine)
                 //   block.adjacentMines++
             })
             .filter(Boolean) as BlockState[]
     }
 
+    showAllMines(){
+        console.log("showAllMines")
+        this.board.flat().forEach(item=>{
+            if(item.mine){
+                item.revealed = true
+            }
+        })
+    }
+
     checkGameState(){
         if(!this.mineGenerated)
             return
-        const blocks = this.state.value.flat()
+        const blocks = this.board.flat()
         if(blocks.every(block=>block.revealed || block.flagged)){
-            if(blocks.some(block=>block.flagged && !block.mine))
-            alert('You cheat!')
-            else
-            alert('You win!')
+            if(blocks.some(block=>block.flagged && !block.mine)){
+                alert('You cheat!')
+                this.state.value.gameState = 'lost'
+            }
+            else{
+                alert('You win!')
+                this.state.value.gameState = 'won'
+            }
+
         }
     }
 }
