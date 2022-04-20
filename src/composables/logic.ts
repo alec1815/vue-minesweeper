@@ -150,8 +150,6 @@ export class GamePlay{
             this.generateMines(this.board,block)
             this.state.value.mineGenerated = true
         }
-
-        // console.log("generateMines",this.board.value)
         
         block.revealed = true
         
