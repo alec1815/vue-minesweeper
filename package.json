@@ -10,7 +10,9 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@types/canvas-confetti": "^1.4.2",
     "@vueuse/core": "^8.2.5",
+    "canvas-confetti": "^1.5.1",
     "vue": "^3.2.31",
     "vue-router": "^4.0.14"
   },
