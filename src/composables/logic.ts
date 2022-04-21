@@ -120,7 +120,6 @@ export class GamePlay{
     }
 
     expendZero(block:BlockState){
-        // console.log(block);
         if(block.adjacentMines)
             return
         this.getSiblings(block).forEach(b=>{
@@ -159,7 +158,6 @@ export class GamePlay{
             alert('BOOOM!')
             return
         }
-        // console.log("A")
         this.expendZero(block)
         // this.checkGameState()
     }
