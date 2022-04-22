@@ -142,7 +142,6 @@ export class GamePlay{
     }
 
     onClick(block:BlockState) {
-        // console.log("mineGenerated",this.state.value.mineGenerated)
         if(this.state.value.gameState !== 'play')
             return
         if(!this.state.value.mineGenerated){
