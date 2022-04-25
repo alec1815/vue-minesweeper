@@ -35,8 +35,13 @@ export class GamePlay{
         return this.state.value.board.flat()
     }
 
-    reset(){
-        console.log("reset")
+    reset(width=this.width,
+        height=this.height,
+        mines=this.mines){
+            this.width = width
+            this.height = height
+            this.mines = mines
+        console.log(width,height)
         const board = Array.from({ length:this.height }, (_,y)=>
             Array.from({length:this.width},
                 (_,x):BlockState=> ({
