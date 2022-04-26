@@ -73,6 +73,7 @@ console.log("state",state)
           :block="block"
           @click="play.onClick(block)"
           @contextmenu.prevent="play.onRightClick(block)"
+          @dblclick="play.autoExpand(block)"
           ></MineBlock>
       </div>
     </div>
