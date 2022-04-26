@@ -3,7 +3,7 @@ import {toggleDev, isDev} from '~/composables'
 import { GamePlay } from '~/composables/logic';
 
 const now = $(useNow())
-const timerMS = $computed(()=> Math.round((+now - play.state.value.timerMS)/1000))
+const timerMS = $computed(()=> Math.round(((play.state.value.endMS || +now) - play.state.value.timerMS)/1000))
 
 const play = new GamePlay(9,9,10)
 useStorage("vuesweeper-state",play.state)
@@ -13,7 +13,7 @@ function newGame(difficulty: 'easy' | 'medium' | 'hard'){
   console.log(difficulty)
   switch(difficulty){
     case'easy':
-      play.reset(9,9,10)
+      play.reset(9,9,3)
       break
     case'medium':
       play.reset(20,20,40)
@@ -59,7 +59,6 @@ console.log("state",state)
         <div i-mdi-mine />
         {{mineRest}}
       </div>
-      
     </div>
     <div p-5 w-full overflow-auto>
       <div v-for="row,y in state"
