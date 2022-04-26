@@ -2,6 +2,9 @@
 import {toggleDev, isDev} from '~/composables'
 import { GamePlay } from '~/composables/logic';
 
+const now = $(useNow())
+const timerMS = $computed(()=> Math.round((+now - play.state.value.timerMS)/1000))
+
 const play = new GamePlay(9,9,10)
 useStorage("vuesweeper-state",play.state)
 const state = computed(()=>play.board)
@@ -25,8 +28,14 @@ watchEffect(()=>{
   play.checkGameState()
 })
 console.log("blocks",play.blocks)
-const mineCount = computed(()=>{
-  return play.blocks.reduce((a,b)=>a+(b.mine?1:0),0)
+// const mineCount = computed(()=>{
+//   return play.blocks.reduce((a,b)=>a+(b.mine?1:0),0)
+// })
+
+const mineRest = $computed(()=>{
+  if(!play.state.value.mineGenerated)
+    return play.mines
+  return play.blocks.reduce((a,b)=>a+(b.mine?1:0) - (b.flagged ? 1: 0) ,0)
 })
 console.log("state",state)
 </script>
@@ -34,11 +43,23 @@ console.log("state",state)
 <template>
   <div>
     Minesweeper
-    <div flex="~ gap1" justify-center>
+    <div flex="~ gap1" justify-center p4>
       <button btn @click="play.reset()">New Game</button>
       <button btn @click="newGame('easy')">Easy</button>
       <button btn @click="newGame('medium')">Medium</button>
       <button btn @click="newGame('hard')">Hard</button>
+    </div>
+
+    <div flex="~ gap-10" justify-center>
+      <div font-mono text-2xl flex="~ gap-1" items-center>
+        <div i-carbon-time />
+        {{timerMS}}
+      </div>
+      <div font-mono text-2xl flex="~ gap-1" items-center>
+        <div i-mdi-mine />
+        {{mineRest}}
+      </div>
+      
     </div>
     <div p-5 w-full overflow-auto>
       <div v-for="row,y in state"
@@ -55,7 +76,7 @@ console.log("state",state)
           ></MineBlock>
       </div>
     </div>
-    <div>{{mineCount}}</div>
+    <!-- <div>{{mineCount}}</div> -->
     <div flex="~ gap-1" justify-center >
       <button btn @click="toggleDev()">{{isDev ? 'DEV' : 'NORMAL'}}</button>
       

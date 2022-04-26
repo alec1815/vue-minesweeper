@@ -14,7 +14,8 @@ const directions = [
 interface GameState{
     board: BlockState[][]
     mineGenerated:boolean
-    gameState:'play' | 'won' | 'lost'
+    gameState:'play' | 'won' | 'lost',
+    timerMS:number
 }
 
 export class GamePlay{
@@ -25,7 +26,7 @@ export class GamePlay{
     constructor(
         public width:number,
         public height:number,
-        public mines:number) {
+        public mines:number,) {
         this.reset()
     }
     get board(){
@@ -56,7 +57,8 @@ export class GamePlay{
         this.state.value = {
             mineGenerated :false,
             gameState:'play',
-            board : board
+            board : board,
+            timerMS: +Date.now()
         }
     }
 
@@ -74,9 +76,7 @@ export class GamePlay{
             const x = this.randomInt(0,this.width-1)
             const y = this.randomInt(0,this.height-1)
             const block = state[y][x]
-            if(Math.abs(initial.x - block.x) <= 1)
-                return false
-            if(Math.abs(initial.y - block.y) <= 1)
+            if(Math.abs(initial.x - block.x) <= 1 && Math.abs(initial.y - block.y) <= 1)
                 return false
             if(block.mine)
                 return false
